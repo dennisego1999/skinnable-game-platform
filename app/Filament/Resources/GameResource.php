@@ -34,29 +34,25 @@ class GameResource extends Resource
                     ->schema([
                         Forms\Components\Tabs\Tab::make('Information')
                             ->schema([
-                                Forms\Components\Group::make([
-                                    Forms\Components\TextInput::make('name')
-                                        ->required(),
-                                    Forms\Components\Select::make('game_type_id')
-                                        ->relationship(
-                                            name: 'Type',
-                                            titleAttribute: 'name',
-                                        )
-                                        ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->name}")
-                                        ->searchable()
-                                        ->preload(),
-                                    Forms\Components\Toggle::make('is_active')
-                                        ->required(),
-                                ]),
+                                Forms\Components\TextInput::make('name')
+                                    ->required(),
+                                Forms\Components\Select::make('game_type_id')
+                                    ->relationship(
+                                        name: 'Type',
+                                        titleAttribute: 'name',
+                                    )
+                                    ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->name}")
+                                    ->searchable()
+                                    ->preload(),
+                                Forms\Components\Toggle::make('is_active')
+                                    ->required(),
                             ]),
                         Forms\Components\Tabs\Tab::make('Skin')
                             ->schema([
-                                Forms\Components\Group::make([
-                                    Forms\Components\ColorPicker::make('background_color')
-                                        ->rgba(),
-                                    Forms\Components\ColorPicker::make('accent_color')
-                                        ->rgba(),
-                                ])
+                                Forms\Components\ColorPicker::make('background_color')
+                                    ->rgba(),
+                                Forms\Components\ColorPicker::make('accent_color')
+                                    ->rgba(),
                             ])
                     ]),
             ]);
@@ -66,7 +62,7 @@ class GameResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('type')
+                Tables\Columns\TextColumn::make('type.name')
                     ->searchable(),
                 Tables\Columns\IconColumn::make('is_active')
                     ->boolean(),
@@ -87,6 +83,7 @@ class GameResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
@@ -108,6 +105,7 @@ class GameResource extends Resource
         return [
             'index' => Pages\ListGames::route('/'),
             'create' => Pages\CreateGame::route('/create'),
+            'view' => Pages\ViewGame::route('/{record}'),
             'edit' => Pages\EditGame::route('/{record}/edit'),
         ];
     }
