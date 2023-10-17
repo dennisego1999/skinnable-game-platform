@@ -20,8 +20,6 @@ class RolePermissionSeeder extends Seeder
         [
             'name' => 'viewer',
             'permissions' => [
-                'view-users',
-                'view-game',
                 'access-dashboard',
             ]
         ],
