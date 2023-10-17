@@ -1,8 +1,6 @@
 import './bootstrap';
 import '../sass/app.scss';
 
-console.log('lol');
-
 import { createApp, h } from 'vue';
 import { createI18n } from 'vue-i18n'
 import { createInertiaApp } from '@inertiajs/vue3';
