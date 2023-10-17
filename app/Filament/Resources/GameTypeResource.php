@@ -49,7 +49,6 @@ class GameTypeResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -69,9 +68,7 @@ class GameTypeResource extends Resource
     {
         return [
             'index' => Pages\ListGameTypes::route('/'),
-            'create' => Pages\CreateGameType::route('/create'),
             'view' => Pages\ViewGameType::route('/{record}'),
-            'edit' => Pages\EditGameType::route('/{record}/edit'),
         ];
     }
 }
