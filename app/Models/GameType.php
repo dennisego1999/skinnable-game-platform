@@ -3,16 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Game extends Model
+class GameType extends Model
 {
     protected $fillable = [
         'name',
-        'game_type_id',
-        'is_active',
-        'background_color',
-        'accent_color',
     ];
 
     /*
@@ -26,9 +22,9 @@ class Game extends Model
     | RELATIONS
     |--------------------------------------------------------------------------
     */
-    public function type(): belongsTo
+    public function games(): hasMany
     {
-        return $this->belongsTo(GameType::class, 'game_type_id');
+        return $this->hasMany(Game::class);
     }
 
     /*

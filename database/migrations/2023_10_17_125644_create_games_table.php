@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('games', function (Blueprint $table) {
             $table->id();
             $table->json('name');
-            $table->string('type');
+            $table->foreignId('game_type_id')->constrained()->onDelete('cascade');
             $table->boolean('is_active')->default(false);
             $table->string('background_color')->nullable();
             $table->string('accent_color')->nullable();
