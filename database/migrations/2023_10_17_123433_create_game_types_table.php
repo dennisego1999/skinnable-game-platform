@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('game_types', function (Blueprint $table) {
             $table->id();
             $table->json('name');
-            $table->json('slug');
             $table->timestamps();
         });
     }

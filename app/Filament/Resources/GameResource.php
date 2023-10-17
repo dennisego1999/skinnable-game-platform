@@ -7,14 +7,17 @@ use App\Filament\Resources\GameResource\RelationManagers;
 use App\Models\Game;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Resources\Concerns\Translatable;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Database\Eloquent\Model;
 
 class GameResource extends Resource
 {
+    use Translatable;
+
     protected static ?string $model = Game::class;
 
     protected static ?string $navigationGroup = 'Resources';
@@ -34,9 +37,14 @@ class GameResource extends Resource
                                 Forms\Components\Group::make([
                                     Forms\Components\TextInput::make('name')
                                         ->required(),
-                                    Forms\Components\TextInput::make('type')
-                                        ->required()
-                                        ->maxLength(255),
+                                    Forms\Components\Select::make('game_type_id')
+                                        ->relationship(
+                                            name: 'Type',
+                                            titleAttribute: 'name',
+                                        )
+                                        ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->name}")
+                                        ->searchable()
+                                        ->preload(),
                                     Forms\Components\Toggle::make('is_active')
                                         ->required(),
                                 ]),

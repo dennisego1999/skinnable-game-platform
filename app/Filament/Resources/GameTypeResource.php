@@ -5,16 +5,17 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\GameTypeResource\Pages;
 use App\Filament\Resources\GameTypeResource\RelationManagers;
 use App\Models\GameType;
-use Closure;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Resources\Concerns\Translatable;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Support\Str;
 
 class GameTypeResource extends Resource
 {
+    use Translatable;
+
     protected static ?string $model = GameType::class;
 
     protected static ?string $navigationGroup = 'Resources';
@@ -31,12 +32,7 @@ class GameTypeResource extends Resource
             ->schema([
                 Forms\Components\Group::make([
                     Forms\Components\TextInput::make('name')
-                        ->reactive()
-//                        ->afterStateUpdated(function (Closure $set, $state) {
-//                            $set('slug', Str::slug($state));
-//                        })->required(),
-//                    Forms\Components\TextInput::make('slug')
-//                        ->required(),
+                        ->required(),
                 ])
             ]);
     }
@@ -45,14 +41,8 @@ class GameTypeResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('name')
+                    ->searchable(),
             ])
             ->filters([
                 //
