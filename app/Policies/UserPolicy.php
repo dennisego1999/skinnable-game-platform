@@ -2,11 +2,10 @@
 
 namespace App\Policies;
 
-use App\Models\GameType;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class GameTypePolicy
+class UserPolicy
 {
     use HandlesAuthorization;
 
@@ -15,23 +14,23 @@ class GameTypePolicy
         return true;
     }
 
-    public function view(User $user, GameType $model): bool
+    public function view(User $user, User $model): bool
     {
         return true;
     }
 
     public function create(User $user): bool
     {
-        return false;
+        return $user->can('manage-users');
     }
 
-    public function update(User $user, GameType $model): bool
+    public function update(User $user, User $model): bool
     {
-        return false;
+        return $user->can('manage-users');
     }
 
-    public function delete(User $user, GameType $model): bool
+    public function delete(User $user, User $model): bool
     {
-        return false;
+        return $user->can('manage-users');
     }
 }
