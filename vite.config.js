@@ -6,23 +6,12 @@ export default ({ mode }) => {
     // Read the environment file
     process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
 
-    const host = process.env.VITE_TLS_URL;
-    const isDDEV = process.env.VITE_PROJECT_DIR;
-    const server = !isDDEV ? null : {
-        hmr: {
-            protocol: "wss",
-            host,
-        },
-    };
-    const valetTls = isDDEV ? null : host;
-
     return defineConfig({
         plugins: [
             laravel({
                 input: 'resources/js/app.js',
                 ssr: 'resources/js/ssr.js',
                 refresh: true,
-                valetTls,
             }),
             vue({
                 template: {
@@ -38,6 +27,5 @@ export default ({ mode }) => {
                 '@': '/resources/js',
             },
         },
-        server,
     });
 };
