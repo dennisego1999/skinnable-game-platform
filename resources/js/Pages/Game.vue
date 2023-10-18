@@ -23,5 +23,5 @@ const components = {
 </script>
 
 <template>
-    <Component :is="components[game.type.slug]"/>
+    <Component :data="game" :is="components[game.type.slug]"/>
 </template>

@@ -4,7 +4,7 @@ import {useI18n} from "vue-i18n";
 
 //Define props
 const props = defineProps({
-
+    data: Object,
 });
 
 //Set translations variable
@@ -17,5 +17,7 @@ const {t} = useI18n({});
         :description="t('games.3d_experience_game.meta.description')"
     />
 
-    <h1>Welcome to the 3D experience game!</h1>
+    <div class="flex justify-center items-center h-full w-full">
+        <h1 class="text-4xl font-bold">{{ data.name }}</h1>
+    </div>
 </template>

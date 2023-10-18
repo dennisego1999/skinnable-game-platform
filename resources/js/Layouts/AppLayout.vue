@@ -8,7 +8,7 @@ nextTick(() => {
 </script>
 
 <template>
-    <main class="relative min-h-[100dvh] overflow-hidden">
+    <main class="relative h-screen w-screen overflow-hidden">
         <slot />
     </main>
 </template>
