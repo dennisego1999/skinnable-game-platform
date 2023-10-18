@@ -9,6 +9,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
+        "artcore-society/laravel-translation-import": "^1.4",
         "filament/filament": "^3.0-stable",
         "filament/forms": "^3.0-stable",
         "filament/spatie-laravel-media-library-plugin": "^3.0-stable",
@@ -75,5 +76,11 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://satis.wearecelestial.group"
+        }
+    ]
 }

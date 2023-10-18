@@ -18,13 +18,19 @@ class GameTypeResource extends Resource
 
     protected static ?string $model = GameType::class;
 
-    protected static ?string $navigationGroup = 'Resources';
 
     protected static ?string $navigationIcon = 'heroicon-o-ellipsis-horizontal-circle';
 
     protected static ?string $recordTitleAttribute = 'name';
 
     protected static ?string $navigationLabel = 'Types';
+
+    protected static ?int $navigationSort = 3;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('filament.labels.navigation.resources');
+    }
 
     public static function form(Form $form): Form
     {

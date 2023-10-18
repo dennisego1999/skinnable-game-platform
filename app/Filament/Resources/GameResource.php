@@ -5,7 +5,6 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\GameResource\Pages;
 use App\Filament\Resources\GameResource\RelationManagers;
 use App\Models\Game;
-use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Concerns\Translatable;
@@ -20,11 +19,16 @@ class GameResource extends Resource
 
     protected static ?string $model = Game::class;
 
-    protected static ?string $navigationGroup = 'Resources';
-
     protected static ?string $navigationIcon = 'heroicon-o-puzzle-piece';
 
     protected static ?string $recordTitleAttribute = 'name';
+
+    protected static ?int $navigationSort = 2;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('filament.labels.navigation.resources');
+    }
 
     public static function form(Form $form): Form
     {
