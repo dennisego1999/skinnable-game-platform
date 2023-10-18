@@ -107,8 +107,8 @@ class GameResource extends Resource
                         $record->save();
                     })
                     ->hidden(fn (Game $record) => !$record->is_active),
-                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
