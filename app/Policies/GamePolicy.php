@@ -22,16 +22,16 @@ class GamePolicy
 
     public function create(User $user): bool
     {
-        return $user->can('manage-game');
+        return $user->can('manage-games');
     }
 
     public function update(User $user, Game $model): bool
     {
-        return $user->can('manage-game');
+        return $user->can('manage-games');
     }
 
     public function delete(User $user, Game $model): bool
     {
-        return $user->can('manage-game');
+        return $user->can('manage-games');
     }
 }

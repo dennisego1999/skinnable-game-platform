@@ -13,7 +13,8 @@ class RolePermissionSeeder extends Seeder
             'name' => 'admin',
             'permissions' => [
                 'manage-users',
-                'manage-game',
+                'manage-games',
+                'manage-translations',
                 'access-dashboard',
             ]
         ],

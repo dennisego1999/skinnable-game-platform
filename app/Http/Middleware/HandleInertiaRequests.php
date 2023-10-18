@@ -98,7 +98,8 @@ class HandleInertiaRequests extends Middleware
         return [
             'can' => [
                 'manageUsers' => auth()->check() ? auth()->user()->can('manage-users', User::class) : false,
-                'manageGame' => auth()->check() ? auth()->user()->can('manage-game', Game::class) : false,
+                'manageGames' => auth()->check() ? auth()->user()->can('manage-games', Game::class) : false,
+                'manageTranslations' => auth()->check() ? auth()->user()->can('manage-translations', Game::class) : false,
                 'accessDashboard' => auth()->check() ? auth()->user()->can('access-dashboard') : false,
             ]
         ];

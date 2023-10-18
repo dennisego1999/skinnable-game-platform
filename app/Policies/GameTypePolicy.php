@@ -10,12 +10,12 @@ class GameTypePolicy
 {
     use HandlesAuthorization;
 
-    public function viewAny(User $user): bool
+    public function view(User $user, GameType $model): bool
     {
         return true;
     }
 
-    public function view(User $user, GameType $model): bool
+    public function viewAny(User $user): bool
     {
         return true;
     }
