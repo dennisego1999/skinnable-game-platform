@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\GameResource\Pages;
 use App\Filament\Resources\GameResource\RelationManagers;
 use App\Models\Game;
+use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Concerns\Translatable;
@@ -33,6 +34,7 @@ class GameResource extends Resource
                     ->schema([
                         Forms\Components\Tabs\Tab::make('Information')
                             ->schema([
+                                Forms\Components\Hidden::make('id'),
                                 Forms\Components\TextInput::make('name')
                                     ->required(),
                                 Forms\Components\Select::make('game_type_id')
@@ -42,8 +44,7 @@ class GameResource extends Resource
                                     )
                                     ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->name}")
                                     ->searchable()
-                                    ->preload(),
-                                Forms\Components\Toggle::make('is_active')
+                                    ->preload()
                                     ->required(),
                             ]),
                         Forms\Components\Tabs\Tab::make('Skin')
@@ -61,6 +62,8 @@ class GameResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('name')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('type.name')
                     ->searchable(),
                 Tables\Columns\IconColumn::make('is_active')
@@ -82,6 +85,28 @@ class GameResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\Action::make('Activate')
+                    ->label(trans('filament.actions.activate'))
+                    ->color('success')
+                    ->icon('heroicon-o-check')
+                    ->requiresConfirmation()
+                    ->action(function (Game $record) {
+                        Game::query()->update(['is_active' => false]);
+
+                        $record->is_active = true;
+                        $record->save();
+                    })
+                    ->hidden(fn (Game $record) => $record->is_active),
+                Tables\Actions\Action::make('Disable')
+                    ->label(trans('filament.actions.disable'))
+                    ->color('danger')
+                    ->icon('heroicon-o-x-mark')
+                    ->requiresConfirmation()
+                    ->action(function (Game $record) {
+                        $record->is_active = false;
+                        $record->save();
+                    })
+                    ->hidden(fn (Game $record) => !$record->is_active),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
