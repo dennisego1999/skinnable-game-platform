@@ -3,12 +3,14 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\LanguageLineResource\Pages;
-use App\Filament\Resources\LanguageLineResource\RelationManagers;
 use ArtcoreSociety\TranslationImport\Models\LanguageLine;
+use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables;
+use Illuminate\Database\Eloquent\Builder;
+use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 class LanguageLineResource extends Resource
 {
@@ -25,9 +27,24 @@ class LanguageLineResource extends Resource
 
     public static function form(Form $form): Form
     {
+        $locales = LaravelLocalization::getSupportedLocales();
+
+        $fields = collect($locales)->map(function ($locale, $key) {
+            return Forms\Components\TextInput::make("text.$key")
+                ->label($locale['name']);
+        });
+
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('group')
+                    ->dehydrated(false)
+                    ->disabled(),
+                Forms\Components\TextInput::make('key')
+                    ->dehydrated(false)
+                    ->disabled(),
+                Forms\Components\Fieldset::make('Translations')
+                    ->columns(1)
+                    ->schema($fields->toArray())
             ]);
     }
 
@@ -35,34 +52,43 @@ class LanguageLineResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('group')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('key')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('text')
+                    ->getStateUsing(fn ($record) => data_get($record->text, app()->getLocale(), $record->text))
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->whereRaw("LOWER(text) LIKE ?", ["%$search%"]);
+                    })
+                    ->sortable()
+                    ->size('sm')
+                    ->limit()
+                    ->wrap(),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->since()
+                    ->sortable()
+                    ->alignRight()
+                    ->size('sm'),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make()->modalSubheading('After deleting this translation it\'ll reset to the default.'),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
+            ->bulkActions([])
+            ->paginated([5, 10, 25, 50]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListLanguageLines::route('/'),
-            'create' => Pages\CreateLanguageLine::route('/create'),
-            'edit' => Pages\EditLanguageLine::route('/{record}/edit'),
+            'index' => Pages\ManageLanguageLines::route('/'),
         ];
     }
 }
