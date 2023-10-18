@@ -79,7 +79,7 @@ class LanguageLineResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()->modalSubheading('After deleting this translation it\'ll reset to the default.'),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([])
             ->paginated([5, 10, 25, 50]);

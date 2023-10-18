@@ -3,6 +3,7 @@ import AppLayout from "@/Layouts/AppLayout.vue";
 import TwoDimensionalExperienceGame from "@/Components/TwoDimensionalExperienceGame.vue";
 import ThreeDimensionalExperienceGame from "@/Components/ThreeDimensionalExperienceGame.vue";
 import ArExperienceGame from "@/Components/ArExperienceGame.vue";
+import {useI18n} from "vue-i18n";
 
 //Define options
 defineOptions({
@@ -20,8 +21,22 @@ const components = {
     '3d-experience-game': ThreeDimensionalExperienceGame,
     'ar-experience-game': ArExperienceGame,
 };
+
+//Set translations variable
+const {t} = useI18n({});
 </script>
 
 <template>
-    <Component :data="game" :is="components[game.type.slug]"/>
+    <Component
+        v-if="game"
+        :data="game"
+        :is="components[game.type.slug]"
+    />
+
+    <p
+        v-else
+        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-red-500"
+    >
+        {{ t('global.no_active_game') }}
+    </p>
 </template>

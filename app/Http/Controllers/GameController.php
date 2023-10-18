@@ -12,7 +12,7 @@ class GameController extends Controller
         $game = Game::with('type')->where('is_active', true)->first();
 
         return Inertia::render('Game', [
-            'game' => new GameResource($game),
+            'game' => $game ? new GameResource($game) : null,
         ]);
     }
 }
