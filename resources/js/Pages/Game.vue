@@ -3,6 +3,7 @@ import AppLayout from "@/Layouts/AppLayout.vue";
 import TwoDimensionalExperienceGame from "@/Components/TwoDimensionalExperienceGame.vue";
 import ThreeDimensionalExperienceGame from "@/Components/ThreeDimensionalExperienceGame.vue";
 import ArExperienceGame from "@/Components/ArExperienceGame.vue";
+import {Head} from "@inertiajs/vue3";
 
 //Define options
 defineOptions({
@@ -23,5 +24,10 @@ const components = {
 </script>
 
 <template>
-    <component :is="components[game.type.slug]"/>
+    <Head
+        :title="'Game'"
+        description="'The description'"
+    />
+
+    <Component :is="components[game.type.slug]"/>
 </template>
