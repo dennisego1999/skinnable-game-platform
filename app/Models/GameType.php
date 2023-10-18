@@ -14,10 +14,12 @@ class GameType extends Model
 
     protected $fillable = [
         'name',
+        'slug'
     ];
 
     public $translatable = [
         'name',
+        'slug'
     ];
 
     /*
