@@ -15,23 +15,13 @@ const props = defineProps({
 });
 
 //Define variables
-const components = [
-    {
-        type: '2d-experience-game',
-        component: TwoDimensionalExperienceGame
-    },
-    {
-        type: '3d-experience-game',
-        component: ThreeDimensionalExperienceGame
-    },
-    {
-        type: 'ar-experience-game',
-        component: ArExperienceGame
-    },
-];
-const currentComponent = components.find(component => component.type === props.game.type.slug)
+const components = {
+    '2d-experience-game': TwoDimensionalExperienceGame,
+    '3d-experience-game': ThreeDimensionalExperienceGame,
+    'ar-experience-game': ArExperienceGame,
+};
 </script>
 
 <template>
-    <component :is="currentComponent.component"/>
+    <component :is="components[game.type.slug]"/>
 </template>
