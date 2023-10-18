@@ -66,7 +66,8 @@ class HandleInertiaRequests extends Middleware
 
         //Get the files that should be shared with the SPA
         $files = [
-            'spa'
+            'global',
+            'games'
         ];
 
         //Load the translations of the current locale
