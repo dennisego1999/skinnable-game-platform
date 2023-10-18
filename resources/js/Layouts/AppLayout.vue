@@ -1,4 +1,6 @@
 <script setup>
+import Navigation from "@/Components/Navigation.vue";
+import Footer from "@/Components/Footer.vue";
 import {nextTick} from "vue";
 
 nextTick(() => {
@@ -8,7 +10,11 @@ nextTick(() => {
 </script>
 
 <template>
+    <Navigation/>
+
     <main class="relative h-screen w-screen overflow-hidden">
         <slot />
     </main>
+
+    <Footer/>
 </template>
