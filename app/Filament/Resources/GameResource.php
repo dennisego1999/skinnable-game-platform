@@ -99,7 +99,7 @@ class GameResource extends Resource
                     })
                     ->hidden(fn (Game $record) => $record->is_active),
                 Tables\Actions\Action::make('Disable')
-                    ->label(trans('filament.actions.disable'))
+                    ->label('Disable')
                     ->color('danger')
                     ->icon('heroicon-o-x-mark')
                     ->requiresConfirmation()
