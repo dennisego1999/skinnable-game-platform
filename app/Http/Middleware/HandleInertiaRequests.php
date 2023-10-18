@@ -41,6 +41,7 @@ class HandleInertiaRequests extends Middleware
         //Get the shared data
         $data = array_merge(parent::share($request), [
             //General setup
+            'locales' => fn () => $this->getLocales(),
             'currentRouteName' => $request->route()->getName(),
             'flash' => [
                 'success' => fn() => $request->session()->get('success'),
@@ -83,6 +84,13 @@ class HandleInertiaRequests extends Middleware
         }
 
         return $translations;
+    }
+
+    private function getLocales(): array
+    {
+        return [
+            'currentLocale' => config('app.locale')
+        ];
     }
 
     private function getPolicies()

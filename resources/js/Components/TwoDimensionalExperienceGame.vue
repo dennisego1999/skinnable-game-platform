@@ -7,7 +7,8 @@ const props = defineProps({
 
 });
 
-
+//Set translations variable
+const {t} = useI18n({});
 </script>
 
 <template>
