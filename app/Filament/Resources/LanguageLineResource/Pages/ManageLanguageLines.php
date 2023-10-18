@@ -22,13 +22,13 @@ class ManageLanguageLines extends ManageRecords
     protected function getHeaderActions(): array
     {
         return [
-            Action::make(__('filament.labels.language_lines.import'))
+            Action::make('Import')
                 ->icon('heroicon-m-arrow-up-tray')
                 ->action(function ($data) {
                     Excel::import(new LanguageLineImport(), $data['excel']);
 
                     Notification::make()
-                        ->title(__('filament.notifications.translations_imported'))
+                        ->title('Translations imported')
                         ->success()
                         ->send();
                 })
@@ -65,18 +65,18 @@ class ManageLanguageLines extends ManageRecords
                         ->disabled()
                 ]),
 
-            Action::make(__('filament.labels.language_lines.export'))
+            Action::make('Export')
                 ->icon('heroicon-m-arrow-down-tray')
                 ->action(fn() => Excel::download(new LanguageLineExport(), 'language-lines.xlsx')),
 
-            Action::make(__('filament.labels.language_lines.scan'))
+            Action::make('Scan')
                 ->color('gray')
                 ->icon('heroicon-m-arrow-path-rounded-square')
                 ->action(function () {
                     Artisan::call(ImportTranslationsCommand::class);
 
                     Notification::make()
-                        ->title(__('filament.notifications.translation_scanned'))
+                        ->title('Translations scanned')
                         ->success()
                         ->send();
                 })

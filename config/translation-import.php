@@ -13,7 +13,6 @@ return [
         'passwords',
         'validation',
         // Add custom files here
-        'filament',
         'global',
         'games'
     ],

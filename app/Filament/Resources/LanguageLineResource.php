@@ -16,14 +16,11 @@ class LanguageLineResource extends Resource
 {
     protected static ?string $model = LanguageLine::class;
 
+    protected static ?string $navigationGroup = 'Translations';
+
     protected static ?string $navigationIcon = 'heroicon-o-language';
 
     protected static ?int $navigationSort = 4;
-
-    public static function getNavigationGroup(): ?string
-    {
-        return __('filament.labels.navigation.translations');
-    }
 
     public static function form(Form $form): Form
     {

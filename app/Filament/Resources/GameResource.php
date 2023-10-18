@@ -19,16 +19,13 @@ class GameResource extends Resource
 
     protected static ?string $model = Game::class;
 
+    protected static ?string $navigationGroup = 'Resources';
+
     protected static ?string $navigationIcon = 'heroicon-o-puzzle-piece';
 
     protected static ?string $recordTitleAttribute = 'name';
 
     protected static ?int $navigationSort = 2;
-
-    public static function getNavigationGroup(): ?string
-    {
-        return __('filament.labels.navigation.resources');
-    }
 
     public static function form(Form $form): Form
     {
@@ -90,7 +87,7 @@ class GameResource extends Resource
             ])
             ->actions([
                 Tables\Actions\Action::make('Activate')
-                    ->label(trans('filament.actions.activate'))
+                    ->label('Activate')
                     ->color('success')
                     ->icon('heroicon-o-check')
                     ->requiresConfirmation()
