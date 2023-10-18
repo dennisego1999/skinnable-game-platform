@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\GameResource;
 use App\Models\Game;
 use Inertia\Inertia;
 
 class GameController extends Controller
 {
     public function __invoke() {
-        $game = Game::firstWhere('is_active', true)->with('type')->get();
+        $game = Game::with('type')->where('is_active', true)->first();
 
         return Inertia::render('Game', [
-            'game' => $game,
+            'game' => new GameResource($game),
         ]);
     }
 }
