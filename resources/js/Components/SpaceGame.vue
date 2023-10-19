@@ -23,14 +23,11 @@ function startGame() {
 
     //Init race game class
     game = new SpaceGame('race-canvas');
-
-    //Add event listener
-    window.addEventListener('resize', () => game.resize());
 }
 
 onBeforeUnmount(() => {
-    //Remove event listener
-    window.removeEventListener('resize', () => game.resize());
+    //Remove event listeners
+    game.removeEventListeners();
 });
 </script>
 

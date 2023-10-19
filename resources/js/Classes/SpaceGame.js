@@ -1,13 +1,11 @@
 import * as THREE from "three";
 import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 import {DRACOLoader} from "three/addons/loaders/DRACOLoader.js";
-import {OrbitControls} from "three/addons/controls/OrbitControls.js";
 import {lerp} from "@/Util/gameHelpers.js";
 import {gsap} from "gsap";
 
 export default class SpaceGame {
     constructor(canvasId) {
-        this.cameraControls = null;
         this.fps = 1000 / 30;
         this.then = null;
         this.scene = null;
@@ -26,8 +24,9 @@ export default class SpaceGame {
         this.gltfLoader = new GLTFLoader();
         this.gltfLoader.setDRACOLoader(this.dracoLoader);
         this.textureLoader = new THREE.TextureLoader();
-        this.spaceshipCurrentPosition = null;
-        this.spaceshipTargetPosition = null;
+        this.spaceshipStartPosition = null;
+        this.spaceshipCurrentPosition = new THREE.Vector3();
+        this.spaceshipTargetPosition = new THREE.Vector3();
 
         //Init game
         this.init();
@@ -43,14 +42,14 @@ export default class SpaceGame {
         //Setup camera
         this.setupCamera();
 
-        //Setup controls
-        this.setupControls();
-
         //Load models
         await this.loadModels();
 
         //Setup scene
         this.setupScene();
+
+        //Setup event listeners
+        this.setupEventListeners();
 
         //Start render loop
         this.animate.call(this);
@@ -58,7 +57,7 @@ export default class SpaceGame {
         //Set camera view
         this.setCameraView({
             x: 0,
-            y: 2,
+            y: 0,
             z: 10,
         });
     }
@@ -76,7 +75,7 @@ export default class SpaceGame {
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         this.renderer.setSize(window.innerWidth, window.innerHeight);
-        this.renderer.setPixelRatio(window.devicePixelRatio);
+        this.renderer.setPixelRatio(1);
     }
 
     setupCamera() {
@@ -114,11 +113,6 @@ export default class SpaceGame {
         });
     }
 
-    setupControls() {
-        //Set controls
-        this.cameraControls = new OrbitControls(this.camera, this.renderer.domElement);
-    }
-
     async loadModels() {
         //Set car loader
         this.spaceshipLoader = new Promise((resolve, reject) => {
@@ -145,12 +139,8 @@ export default class SpaceGame {
                     //Add car to scene
                     this.scene.add(this.spaceship);
 
-                    //Set the car as target of orbit controls
-                    this.cameraControls.target = this.spaceship.position;
-
-                    //Set current and target position
-                    this.spaceshipCurrentPosition = this.spaceship.position;
-                    this.spaceshipTargetPosition = this.spaceship.position;
+                    //Set start position
+                    this.spaceshipStartPosition = this.spaceship.position
 
                     //Resolve
                     resolve(gltf)
@@ -237,12 +227,37 @@ export default class SpaceGame {
         this.scene.add(this.stars);
     }
 
+    setupEventListeners() {
+        //Add event listeners
+        document.body.addEventListener('mousemove', event => this.onMouseMove.call(this, event));
+        window.addEventListener('resize', () => this.resize());
+    }
+
+    removeEventListeners() {
+        //Remove event listeners
+        document.body.removeEventListener('mousemove', event => this.onMouseMove.call(this, event));
+        window.removeEventListener('resize', () => this.resize());
+    }
+
+    onMouseMove(event) {
+        //Calculate the normalized mouse position within the canvas
+        const mouse = new THREE.Vector2(
+            (event.clientX / window.innerWidth) - 0.5,
+            -(event.clientY / window.innerHeight) + 0.5
+        );
+
+        //Update the spaceship's target position using the offset from the starting point
+        this.spaceshipTargetPosition.x = this.spaceshipStartPosition.x + mouse.x;
+        this.spaceshipTargetPosition.y = this.spaceshipStartPosition.y + mouse.y;
+    }
+
+
     resize() {
         //Set correct aspect
         this.camera.aspect = window.innerWidth / window.innerHeight;
         this.camera.updateProjectionMatrix();
 
-        //Set canvas size again
+        //Set canvas size and aspect ratio again
         this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
@@ -262,22 +277,16 @@ export default class SpaceGame {
     }
 
     render(delta) {
-        //Update controls
-        this.cameraControls.update();
-
         //Rotate stars
         this.stars.rotation.y += -0.0001;
 
         if(this.spaceship) {
             //Lerp spaceship position
-            this.spaceshipCurrentPosition.x = lerp(this.spaceshipCurrentPosition.x, this.spaceshipTargetPosition.x, 0.1);
-            this.spaceshipCurrentPosition.y = lerp(this.spaceshipCurrentPosition.y, this.spaceshipTargetPosition.y, 0.1);
-            this.spaceshipCurrentPosition.z = lerp(this.spaceshipCurrentPosition.z, this.spaceshipTargetPosition.z, 0.1);
+            this.spaceshipCurrentPosition.x = lerp(this.spaceshipCurrentPosition.x, this.spaceshipTargetPosition.x, 0.05);
+            this.spaceshipCurrentPosition.y = lerp(this.spaceshipCurrentPosition.y, this.spaceshipTargetPosition.y, 0.05);
 
             //Apply to spaceship
-            this.spaceship.position.x = this.spaceshipCurrentPosition.x;
-            this.spaceship.position.y = this.spaceshipCurrentPosition.y;
-            this.spaceship.position.z = this.spaceshipCurrentPosition.z;
+            this.spaceship.position.copy(this.spaceshipCurrentPosition);
         }
 
         //Render
