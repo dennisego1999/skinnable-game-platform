@@ -1,6 +1,9 @@
 <?php
 
 return [
+    'buttons' => [
+        'start' => 'Start'
+    ],
     '2d_experience_game' => [
         'meta' => [
             'title' => 'This is the 2D Experience Game.',
