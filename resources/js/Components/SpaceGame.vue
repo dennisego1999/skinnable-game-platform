@@ -52,7 +52,7 @@ onBeforeUnmount(() => {
 
     <canvas
         id="race-canvas"
-        class="h-screen w-screen transition-opacity duration-500"
+        class="h-screen w-screen transition-opacity duration-1000"
         :class="{'opacity-0': !hasStarted}"
     ></canvas>
 </template>

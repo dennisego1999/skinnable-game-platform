@@ -2,6 +2,7 @@ import * as THREE from "three";
 import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 import {DRACOLoader} from "three/addons/loaders/DRACOLoader.js";
 import {OrbitControls} from "three/addons/controls/OrbitControls.js";
+import {lerp} from "@/Util/gameHelpers.js";
 import {gsap} from "gsap";
 
 export default class SpaceGame {
@@ -25,6 +26,8 @@ export default class SpaceGame {
         this.gltfLoader = new GLTFLoader();
         this.gltfLoader.setDRACOLoader(this.dracoLoader);
         this.textureLoader = new THREE.TextureLoader();
+        this.spaceshipCurrentPosition = null;
+        this.spaceshipTargetPosition = null;
 
         //Init game
         this.init();
@@ -145,6 +148,10 @@ export default class SpaceGame {
                     //Set the car as target of orbit controls
                     this.cameraControls.target = this.spaceship.position;
 
+                    //Set current and target position
+                    this.spaceshipCurrentPosition = this.spaceship.position;
+                    this.spaceshipTargetPosition = this.spaceship.position;
+
                     //Resolve
                     resolve(gltf)
                 },
@@ -198,7 +205,17 @@ export default class SpaceGame {
 
         //Loop through all the vertices and set their random position
         for (let i = 0; i < particlesCount; i++) {
-            vertices[i] = (Math.random() - 0.5) * 100;
+            let x, y, z;
+            do {
+                // Generate random positions
+                x = (Math.random() - 0.5) * 100;
+                y = (Math.random() - 0.5) * 100;
+                z = (Math.random() - 0.5) * 100;
+            } while (this.spaceship.position.distanceTo(new THREE.Vector3(x, y, z)) < 10); // Minimum distance from spaceship
+
+            vertices[i * 3] = x;
+            vertices[i * 3 + 1] = y;
+            vertices[i * 3 + 2] = z;
         }
 
         //Set position attr
@@ -250,6 +267,18 @@ export default class SpaceGame {
 
         //Rotate stars
         this.stars.rotation.y += -0.0001;
+
+        if(this.spaceship) {
+            //Lerp spaceship position
+            this.spaceshipCurrentPosition.x = lerp(this.spaceshipCurrentPosition.x, this.spaceshipTargetPosition.x, 0.1);
+            this.spaceshipCurrentPosition.y = lerp(this.spaceshipCurrentPosition.y, this.spaceshipTargetPosition.y, 0.1);
+            this.spaceshipCurrentPosition.z = lerp(this.spaceshipCurrentPosition.z, this.spaceshipTargetPosition.z, 0.1);
+
+            //Apply to spaceship
+            this.spaceship.position.x = this.spaceshipCurrentPosition.x;
+            this.spaceship.position.y = this.spaceshipCurrentPosition.y;
+            this.spaceship.position.z = this.spaceshipCurrentPosition.z;
+        }
 
         //Render
         this.renderer.render(this.scene, this.camera);
