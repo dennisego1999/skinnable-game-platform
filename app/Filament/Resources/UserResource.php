@@ -49,9 +49,9 @@ class UserResource extends Resource
                     ->password()
                     ->dehydrateStateUsing(fn (string $state): string => Hash::make($state))
                     ->dehydrated(fn (?string $state): bool => filled($state))
-                    ->required(fn (string $operation): bool => $operation === 'create')
+                    ->required()
                     ->maxLength(255),
-                Forms\Components\Select::make('roles.name')
+                Forms\Components\Select::make('roles')
                     ->relationship(name: 'roles', titleAttribute: 'name')
                     ->required(),
             ]);
