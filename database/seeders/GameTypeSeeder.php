@@ -8,7 +8,7 @@ use Illuminate\Database\Seeder;
 class GameTypeSeeder extends Seeder
 {
     private array $gameTypes = [
-        '3D Race Game',
+        'Space Game',
         '2D Experience Game',
         'AR Experience Game'
     ];

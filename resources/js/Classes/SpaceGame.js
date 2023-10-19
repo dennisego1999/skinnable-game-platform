@@ -4,7 +4,7 @@ import {DRACOLoader} from "three/addons/loaders/DRACOLoader.js";
 import {OrbitControls} from "three/addons/controls/OrbitControls.js";
 import {gsap} from "gsap";
 
-export default class RaceGame {
+export default class SpaceGame {
     constructor(canvasId) {
         this.cameraControls = null;
         this.fps = 1000 / 30;
@@ -13,12 +13,10 @@ export default class RaceGame {
         this.camera = null;
         this.renderer = null;
         this.animateFrameId = null;
-        this.car = null;
-        this.carWheels = [];
-        this.carProgress = 0;
-        this.carLoader = null;
+        this.spaceship = null;
+        this.spaceshipProgress = 0;
+        this.spaceshipLoader = null;
         this.totalProgress = 0;
-        this.textureLoader = new THREE.TextureLoader();
         this.canvas = document.getElementById(canvasId);
         this.clock = new THREE.Clock();
         this.dracoLoader = new DRACOLoader();
@@ -55,8 +53,8 @@ export default class RaceGame {
         //Set camera view
         this.setCameraView({
             x: 0,
-            y: 1.1,
-            z: 3,
+            y: 2,
+            z: 10,
         });
     }
 
@@ -106,8 +104,8 @@ export default class RaceGame {
             x: data.x,
             y: data.y,
             z: data.z,
-            duration: 1,
-            ease: 'power2.out'
+            duration: 3,
+            ease: 'power1.inOut'
         });
     }
 
@@ -121,15 +119,15 @@ export default class RaceGame {
 
     async loadModels() {
         //Set car loader
-        this.carLoader = new Promise((resolve, reject) => {
+        this.spaceshipLoader = new Promise((resolve, reject) => {
             this.gltfLoader.load(
-                '/assets/models/car/scene.gltf',
+                '/assets/models/spaceship/scene.glb',
                 (gltf) => {
                     //Get the model
-                    this.car = gltf.scene.children[0];
+                    this.spaceship = gltf.scene.children[0];
 
                     //Set shadow settings
-                    this.car.traverse(item => {
+                    this.spaceship.traverse(item => {
                         if(item.isMesh) {
                             item.castShadow = true;
                             item.receiveShadow = true;
@@ -137,16 +135,16 @@ export default class RaceGame {
                     });
 
                     //Set rotation of car
-                    this.car.rotation.z = Math.PI;
+                    this.spaceship.rotation.z = Math.PI;
 
                     //Set scale of car
-                    this.car.scale.set(0.5, 0.5, 0.5);
+                    this.spaceship.scale.set(0.01, 0.01, 0.01);
 
                     //Add car to scene
-                    this.scene.add(this.car);
+                    this.scene.add(this.spaceship);
 
                     //Set the car as target of orbit controls
-                    this.cameraControls.target = this.car.position;
+                    this.cameraControls.target = this.spaceship.position;
 
                     //Resolve
                     resolve(gltf)
@@ -161,7 +159,7 @@ export default class RaceGame {
                     }
 
                     //Calculate car progress
-                    this.carProgress = xhr.loaded / total;
+                    this.spaceshipProgress = xhr.loaded / total;
 
                     //Update progress
                     this.updateProgress();
@@ -170,70 +168,29 @@ export default class RaceGame {
             );
         });
 
-        return Promise.all([this.carLoader])
+        return Promise.all([this.spaceshipLoader])
     }
 
     updateProgress() {
         //Keep array of loaders
         const loaders = [
-            this.carLoader,
+            this.spaceshipLoader,
         ];
 
         //Add all progresses between the (...) to get the actual % progress
-        this.totalProgress = (this.carProgress) / loaders.length;
+        this.totalProgress = (this.spaceshipProgress) / loaders.length;
     }
 
     setupScene() {
-        //Create road texture
-        const roadAoTexture = this.textureLoader.load("/assets/textures/road/road_ambientOcclusion.jpg");
-        const roadRoughnessTexture = this.textureLoader.load("/assets/textures/road/road_roughness.jpg");
-        const roadNormalTexture = this.textureLoader.load("/assets/textures/road/road_normal.jpg");
-        const roadTexture = this.textureLoader.load("/assets/textures/road/road.jpg");
-        roadTexture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
-        roadTexture.wrapT = THREE.RepeatWrapping;
-        roadTexture.wrapS = THREE.RepeatWrapping;
-
-        //Create road geometry, material and mesh
-        const roadGeometry = new THREE.PlaneGeometry(2, 2);
-        const roadMaterial = new THREE.MeshStandardMaterial({
-            map: roadTexture,
-            normalMap: roadNormalTexture,
-            roughnessMap: roadRoughnessTexture,
-            aoMap: roadAoTexture
-        });
-        const roadMesh = new THREE.Mesh(roadGeometry, roadMaterial);
-        roadMesh.position.set(0, 0, 0);
-        roadMesh.rotation.set(Math.PI / -2, 0, 0);
-
-        //Set shadow settings
-        roadMesh.receiveShadow = true;
-
-        //Add road mesh to scene
-        this.scene.add(roadMesh);
-
         //Add directional scene light
-        const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 1);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
         directionalLight.position.set(0, 2, 3);
         directionalLight.castShadow = true;
         this.scene.add(directionalLight);
-    }
 
-    setSun() {
-        //Set variables
-        const pmremGenerator = new THREE.PMREMGenerator(this.renderer);
-        const phi = THREE.MathUtils.degToRad(90 - this.sunParameters.elevation);
-        const theta = THREE.MathUtils.degToRad(this.sunParameters.azimuth);
-
-        //Add sun
-        this.sun = new THREE.Vector3();
-        this.sun.setFromSphericalCoords(1, phi, theta);
-
-        //Set uniforms
-        this.sky.material.uniforms['sunPosition'].value.copy(this.sun);
-
-        //Set environment texture
-        const renderTarget = pmremGenerator.fromScene(this.sky);
-        this.scene.environment = renderTarget.texture;
+        //Add ambient scene light
+        const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+        this.scene.add(ambientLight);
     }
 
     resize() {
