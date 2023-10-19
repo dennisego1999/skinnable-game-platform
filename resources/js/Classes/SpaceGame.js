@@ -13,6 +13,7 @@ export default class SpaceGame {
         this.camera = null;
         this.renderer = null;
         this.animateFrameId = null;
+        this.stars = null;
         this.spaceship = null;
         this.spaceshipProgress = 0;
         this.spaceshipLoader = null;
@@ -23,6 +24,7 @@ export default class SpaceGame {
         this.dracoLoader.setDecoderPath('/assets/draco/');
         this.gltfLoader = new GLTFLoader();
         this.gltfLoader.setDRACOLoader(this.dracoLoader);
+        this.textureLoader = new THREE.TextureLoader();
 
         //Init game
         this.init();
@@ -112,9 +114,6 @@ export default class SpaceGame {
     setupControls() {
         //Set controls
         this.cameraControls = new OrbitControls(this.camera, this.renderer.domElement);
-
-        //Limit angle => don't go below ground
-        this.cameraControls.maxPolarAngle = Math.PI / 2.1;
     }
 
     async loadModels() {
@@ -191,6 +190,34 @@ export default class SpaceGame {
         //Add ambient scene light
         const ambientLight = new THREE.AmbientLight(0xffffff, 1);
         this.scene.add(ambientLight);
+
+        //Particles
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 30000;
+        const vertices = new Float32Array(particlesCount);
+
+        //Loop through all the vertices and set their random position
+        for (let i = 0; i < particlesCount; i++) {
+            vertices[i] = (Math.random() - 0.5) * 100;
+        }
+
+        //Set position attr
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+        const particleTexture = this.textureLoader.load('/assets/textures/star.png'); // Add a texture to the particles
+
+        //Create star material
+        const particlesMaterial = new THREE.PointsMaterial({
+            map: particleTexture,
+            size: 0.2,
+            sizeAttenuation: true,
+            transparent: true,
+        });
+
+        //Create star points
+        this.stars = new THREE.Points(particlesGeometry, particlesMaterial);
+
+        //Add stars to scene
+        this.scene.add(this.stars);
     }
 
     resize() {
@@ -220,6 +247,9 @@ export default class SpaceGame {
     render(delta) {
         //Update controls
         this.cameraControls.update();
+
+        //Rotate stars
+        this.stars.rotation.y += -0.0001;
 
         //Render
         this.renderer.render(this.scene, this.camera);
