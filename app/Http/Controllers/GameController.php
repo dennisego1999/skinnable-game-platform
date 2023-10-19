@@ -9,7 +9,7 @@ use Inertia\Inertia;
 class GameController extends Controller
 {
     public function __invoke() {
-        $game = Game::with('type')->where('is_active', true)->first();
+        $game = Game::active()->with('type')->first();
 
         return Inertia::render('Game', [
             'game' => $game ? new GameResource($game) : null,
