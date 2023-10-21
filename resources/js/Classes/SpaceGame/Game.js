@@ -1,6 +1,4 @@
 import * as THREE from "three";
-import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
-import {DRACOLoader} from "three/addons/loaders/DRACOLoader.js";
 import {MovementControls} from "@/Classes/SpaceGame/MovementControls.js";
 import {lerp} from "@/Util/gameHelpers.js";
 import {gsap} from "gsap";
