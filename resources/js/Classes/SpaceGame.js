@@ -98,7 +98,7 @@ export default class SpaceGame {
     }
 
     setCameraView(data) {
-        if(data.instant) {
+        if (data.instant) {
             this.camera.position.set(data.x, data.y, data.z);
             return;
         }
@@ -124,7 +124,7 @@ export default class SpaceGame {
 
                     //Set shadow settings
                     this.spaceship.traverse(item => {
-                        if(item.isMesh) {
+                        if (item.isMesh) {
                             item.castShadow = true;
                             item.receiveShadow = true;
                         }
@@ -243,12 +243,17 @@ export default class SpaceGame {
         //Calculate the normalized mouse position within the canvas
         const mouse = new THREE.Vector2(
             (event.clientX / window.innerWidth) - 0.5,
-            -(event.clientY / window.innerHeight) + 0.5
+            -(event.clientY / window.innerHeight) + 0.5,
         );
 
-        //Update the spaceship's target position using the offset from the starting point
-        this.spaceshipTargetPosition.x = this.spaceshipStartPosition.x + mouse.x;
-        this.spaceshipTargetPosition.y = this.spaceshipStartPosition.y + mouse.y;
+        //Create a new Vector3 with the mouse position in 3D space
+        const cursor3D = new THREE.Vector3(mouse.x, mouse.y, 0);
+
+        //Unproject the cursor position from 2D to 3D space
+        cursor3D.unproject(this.camera);
+
+        //Set the spaceship's target position to the cursor position
+        this.spaceshipTargetPosition.copy(cursor3D);
     }
 
 
@@ -280,7 +285,7 @@ export default class SpaceGame {
         //Rotate stars
         this.stars.rotation.y += -0.0001;
 
-        if(this.spaceship) {
+        if (this.spaceship) {
             //Lerp spaceship position
             this.spaceshipCurrentPosition.x = lerp(this.spaceshipCurrentPosition.x, this.spaceshipTargetPosition.x, 0.05);
             this.spaceshipCurrentPosition.y = lerp(this.spaceshipCurrentPosition.y, this.spaceshipTargetPosition.y, 0.05);

@@ -33,11 +33,6 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        //Abort logged-out
-        if (Auth::guest()) {
-            return parent::share($request);
-        }
-
         //Get the shared data
         $data = array_merge(parent::share($request), [
             //General setup
