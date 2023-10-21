@@ -4,6 +4,7 @@ import {DRACOLoader} from "three/addons/loaders/DRACOLoader.js";
 import {MovementControls} from "@/Classes/SpaceGame/MovementControls.js";
 import {lerp} from "@/Util/gameHelpers.js";
 import {gsap} from "gsap";
+import {GameModel} from "@/Classes/SpaceGame/GameModel.js";
 
 export default class Game {
     constructor(canvasId) {
@@ -16,15 +17,8 @@ export default class Game {
         this.animateFrameId = null;
         this.stars = null;
         this.spaceship = null;
-        this.spaceshipProgress = 0;
-        this.spaceshipLoader = null;
-        this.totalProgress = 0;
         this.canvas = document.getElementById(canvasId);
         this.clock = new THREE.Clock();
-        this.dracoLoader = new DRACOLoader();
-        this.dracoLoader.setDecoderPath('/assets/draco/');
-        this.gltfLoader = new GLTFLoader();
-        this.gltfLoader.setDRACOLoader(this.dracoLoader);
         this.textureLoader = new THREE.TextureLoader();
         this.spaceshipCurrentPosition = new THREE.Vector3();
         this.spaceshipTargetPosition = new THREE.Vector3();
@@ -42,9 +36,6 @@ export default class Game {
 
         //Setup camera
         this.setupCamera();
-
-        //Load models
-        await this.loadModels();
 
         //Setup scene
         this.setupScene();
@@ -117,71 +108,13 @@ export default class Game {
         });
     }
 
-    async loadModels() {
-        //Set car loader
-        this.spaceshipLoader = new Promise((resolve, reject) => {
-            this.gltfLoader.load(
-                '/assets/models/spaceship/scene.glb',
-                (gltf) => {
-                    //Get the model
-                    this.spaceship = gltf.scene.children[0];
-
-                    //Set shadow settings
-                    this.spaceship.traverse(item => {
-                        if (item.isMesh) {
-                            item.castShadow = true;
-                            item.receiveShadow = true;
-                        }
-                    });
-
-                    //Set rotation of car
-                    this.spaceship.rotation.z = Math.PI;
-
-                    //Set scale of car
-                    this.spaceship.scale.set(0.01, 0.01, 0.01);
-
-                    //Add car to scene
-                    this.scene.add(this.spaceship);
-
-                    //Set start position
-                    this.spaceshipStartPosition = this.spaceship.position
-
-                    //Resolve
-                    resolve(gltf)
-                },
-                (xhr) => {
-                    //Get total
-                    let total = xhr.total;
-
-                    if (total === 0) {
-                        //Set default
-                        total = 1681572;
-                    }
-
-                    //Calculate car progress
-                    this.spaceshipProgress = xhr.loaded / total;
-
-                    //Update progress
-                    this.updateProgress();
-                },
-                (error) => reject(error),
-            );
+    async setupScene() {
+        //Create spaceship
+        this.spaceship = new GameModel(this.scene, '/assets/models/spaceship/scene.glb', {
+            scale: new THREE.Vector3(0.01, 0.01, 0.01),
+            rotation: new THREE.Euler(Math.PI / 2, Math.PI, 0)
         });
 
-        return Promise.all([this.spaceshipLoader])
-    }
-
-    updateProgress() {
-        //Keep array of loaders
-        const loaders = [
-            this.spaceshipLoader,
-        ];
-
-        //Add all progresses between the (...) to get the actual % progress
-        this.totalProgress = (this.spaceshipProgress) / loaders.length;
-    }
-
-    setupScene() {
         //Add directional scene light
         const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
         directionalLight.position.set(0, 2, 3);
@@ -199,17 +132,9 @@ export default class Game {
 
         //Loop through all the vertices and set their random position
         for (let i = 0; i < particlesCount; i++) {
-            let x, y, z;
-            do {
-                // Generate random positions
-                x = (Math.random() - 0.5) * 100;
-                y = (Math.random() - 0.5) * 100;
-                z = (Math.random() - 0.5) * 100;
-            } while (this.spaceship.position.distanceTo(new THREE.Vector3(x, y, z)) < 10); // Minimum distance from spaceship
-
-            vertices[i * 3] = x;
-            vertices[i * 3 + 1] = y;
-            vertices[i * 3 + 2] = z;
+            vertices[i * 3] = (Math.random() - 0.5) * 100;
+            vertices[i * 3 + 1] = (Math.random() - 0.5) * 100;
+            vertices[i * 3 + 2] = (Math.random() - 0.5) * 100;
         }
 
         //Set position attr
@@ -274,13 +199,13 @@ export default class Game {
         //Rotate stars
         this.stars.rotation.y += -0.0001;
 
-        if (this.spaceship) {
+        if(this.spaceship && this.spaceship.model) {
             //Lerp spaceship position
             this.spaceshipCurrentPosition.x = lerp(this.spaceshipCurrentPosition.x, this.spaceshipTargetPosition.x, 0.05);
             this.spaceshipCurrentPosition.y = lerp(this.spaceshipCurrentPosition.y, this.spaceshipTargetPosition.y, 0.05);
 
             //Apply to spaceship
-            this.spaceship.position.copy(this.spaceshipCurrentPosition);
+            this.spaceship.model.position.copy(this.spaceshipCurrentPosition);
         }
 
         //Render
