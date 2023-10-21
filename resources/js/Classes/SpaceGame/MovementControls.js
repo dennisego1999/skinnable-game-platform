@@ -1,18 +1,19 @@
 import {Frustum, Matrix4} from "three";
 
 export class MovementControls {
-    constructor(object, camera, targetPosition) {
+    constructor(object, camera, targetPosition, keepInsideViewport) {
         this.object = object;
         this.camera = camera;
         this.targetPosition = targetPosition;
-        this.pressedKeys = {}; // Object to track pressed keys
+        this.keepInsideViewport = keepInsideViewport;
+        this.pressedKeys = {};
 
-        // Init movement controls
+        //Init
         this.init();
     }
 
     init() {
-        // Setup event listeners
+        //Setup event listeners
         this.setupEventListeners();
     }
 
@@ -41,8 +42,15 @@ export class MovementControls {
             deltaX += moveSpeed;
         }
 
+        if(!this.keepInsideViewport) {
+            this.targetPosition.x += deltaX;
+            this.targetPosition.y += deltaY;
+
+            return;
+        }
+
         //Calculate the new target position based on the combined movement
-        const newTargetPosition = this.targetPosition.clone(); // Clone the current target position
+        const newTargetPosition = this.targetPosition.clone();
         newTargetPosition.x += deltaX;
         newTargetPosition.y += deltaY;
 
