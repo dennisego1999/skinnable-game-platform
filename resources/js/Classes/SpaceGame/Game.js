@@ -1,16 +1,18 @@
 import * as THREE from "three";
 import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 import {DRACOLoader} from "three/addons/loaders/DRACOLoader.js";
+import {MovementControls} from "@/Classes/SpaceGame/MovementControls.js";
 import {lerp} from "@/Util/gameHelpers.js";
 import {gsap} from "gsap";
 
-export default class SpaceGame {
+export default class Game {
     constructor(canvasId) {
         this.fps = 1000 / 30;
         this.then = null;
         this.scene = null;
         this.camera = null;
         this.renderer = null;
+        this.controls = null;
         this.animateFrameId = null;
         this.stars = null;
         this.spaceship = null;
@@ -24,7 +26,6 @@ export default class SpaceGame {
         this.gltfLoader = new GLTFLoader();
         this.gltfLoader.setDRACOLoader(this.dracoLoader);
         this.textureLoader = new THREE.TextureLoader();
-        this.spaceshipStartPosition = null;
         this.spaceshipCurrentPosition = new THREE.Vector3();
         this.spaceshipTargetPosition = new THREE.Vector3();
 
@@ -47,6 +48,9 @@ export default class SpaceGame {
 
         //Setup scene
         this.setupScene();
+
+        //Setup controls
+        this.setupControls();
 
         //Setup event listeners
         this.setupEventListeners();
@@ -227,35 +231,20 @@ export default class SpaceGame {
         this.scene.add(this.stars);
     }
 
+    setupControls() {
+        this.controls = new MovementControls(this.spaceshipTargetPosition);
+    }
+
     setupEventListeners() {
         //Add event listeners
-        document.body.addEventListener('mousemove', event => this.onMouseMove.call(this, event));
         window.addEventListener('resize', () => this.resize());
     }
 
     removeEventListeners() {
         //Remove event listeners
-        document.body.removeEventListener('mousemove', event => this.onMouseMove.call(this, event));
+        document.body.removeEventListener('keydown', event => this.onKeyDown.call(this, event));
         window.removeEventListener('resize', () => this.resize());
     }
-
-    onMouseMove(event) {
-        //Calculate the normalized mouse position within the canvas
-        const mouse = new THREE.Vector2(
-            (event.clientX / window.innerWidth) - 0.5,
-            -(event.clientY / window.innerHeight) + 0.5,
-        );
-
-        //Create a new Vector3 with the mouse position in 3D space
-        const cursor3D = new THREE.Vector3(mouse.x, mouse.y, 0);
-
-        //Unproject the cursor position from 2D to 3D space
-        cursor3D.unproject(this.camera);
-
-        //Set the spaceship's target position to the cursor position
-        this.spaceshipTargetPosition.copy(cursor3D);
-    }
-
 
     resize() {
         //Set correct aspect

@@ -2,7 +2,7 @@
 import {Head} from "@inertiajs/vue3";
 import {useI18n} from "vue-i18n";
 import {onBeforeUnmount, ref} from "vue";
-import SpaceGame from "@/Classes/SpaceGame.js";
+import Game from "@/Classes/SpaceGame/Game.js";
 
 //Define props
 const props = defineProps({
@@ -22,7 +22,7 @@ function startGame() {
     hasStarted.value = true;
 
     //Init race game class
-    game = new SpaceGame('race-canvas');
+    game = new Game('race-canvas');
 }
 
 onBeforeUnmount(() => {
