@@ -232,7 +232,7 @@ export default class Game {
     }
 
     setupControls() {
-        this.controls = new MovementControls(this.spaceshipTargetPosition);
+        this.controls = new MovementControls(this.spaceship, this.camera, this.spaceshipTargetPosition);
     }
 
     setupEventListeners() {

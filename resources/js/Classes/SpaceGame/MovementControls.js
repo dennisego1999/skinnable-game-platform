@@ -1,5 +1,9 @@
+import {Frustum, Matrix4} from "three";
+
 export class MovementControls {
-    constructor(targetPosition) {
+    constructor(object, camera, targetPosition) {
+        this.object = object;
+        this.camera = camera;
         this.targetPosition = targetPosition;
         this.pressedKeys = {}; // Object to track pressed keys
 
@@ -37,9 +41,20 @@ export class MovementControls {
             deltaX += moveSpeed;
         }
 
-        //Update the target position based on the combined movement
-        this.targetPosition.x += deltaX;
-        this.targetPosition.y += deltaY;
+        //Calculate the new target position based on the combined movement
+        const newTargetPosition = this.targetPosition.clone(); // Clone the current target position
+        newTargetPosition.x += deltaX;
+        newTargetPosition.y += deltaY;
+
+        //Check if the new target position is outside the viewport
+        const frustum = new Frustum();
+        const matrix = new Matrix4().multiplyMatrices(this.camera.projectionMatrix, this.camera.matrixWorldInverse);
+        frustum.setFromProjectionMatrix(matrix);
+
+        if (frustum.containsPoint(newTargetPosition)) {
+            //If the new target position is inside the viewport, update the target position
+            this.targetPosition.copy(newTargetPosition);
+        }
     }
 
     onKeyDown(event) {
