@@ -1,10 +1,9 @@
 import {Frustum, Matrix4} from "three";
 
-export class MovementControls {
-    constructor(object, camera, targetPosition, keepInsideViewport) {
-        this.object = object;
+export class SpaceshipControls {
+    constructor(spaceship, camera, keepInsideViewport) {
+        this.spaceship = spaceship;
         this.camera = camera;
-        this.targetPosition = targetPosition;
         this.keepInsideViewport = keepInsideViewport;
         this.pressedKeys = {};
 
@@ -43,14 +42,14 @@ export class MovementControls {
         }
 
         if(!this.keepInsideViewport) {
-            this.targetPosition.x += deltaX;
-            this.targetPosition.y += deltaY;
+            this.spaceship.targetPosition.x += deltaX;
+            this.spaceship.targetPosition.y += deltaY;
 
             return;
         }
 
         //Calculate the new target position based on the combined movement
-        const newTargetPosition = this.targetPosition.clone();
+        const newTargetPosition = this.spaceship.targetPosition.clone();
         newTargetPosition.x += deltaX;
         newTargetPosition.y += deltaY;
 
@@ -61,7 +60,7 @@ export class MovementControls {
 
         if (frustum.containsPoint(newTargetPosition)) {
             //If the new target position is inside the viewport, update the target position
-            this.targetPosition.copy(newTargetPosition);
+            this.spaceship.targetPosition.copy(newTargetPosition);
         }
     }
 
@@ -73,14 +72,25 @@ export class MovementControls {
         this.handleKey(event.code, false);
     }
 
+    onClick() {
+        if(!this.spaceship.model) {
+            return;
+        }
+
+        //Shoot
+        this.spaceship.shoot();
+    }
+
     setupEventListeners() {
         //Add event listeners for keydown and keyup
+        document.body.addEventListener('click', () => this.onClick.call(this));
         document.body.addEventListener('keydown', event => this.onKeyDown(event));
         document.body.addEventListener('keyup', event => this.onKeyUp(event));
     }
 
     removeEventListeners() {
         //Remove event listeners
+        document.body.removeEventListener('click', () => this.onClick.call(this));
         document.body.removeEventListener('keydown', event => this.onKeyDown(event));
         document.body.removeEventListener('keyup', event => this.onKeyUp(event));
     }

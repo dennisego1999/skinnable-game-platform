@@ -1,8 +1,7 @@
 import * as THREE from "three";
-import {MovementControls} from "@/Classes/SpaceGame/MovementControls.js";
-import {lerp} from "@/Util/gameHelpers.js";
 import {gsap} from "gsap";
-import {GameModel} from "@/Classes/SpaceGame/GameModel.js";
+import {Spaceship} from "@/Classes/SpaceGame/Spaceship.js";
+import {SpaceshipControls} from "@/Classes/SpaceGame/SpaceshipControls.js";
 
 export default class Game {
     constructor(canvasId) {
@@ -17,9 +16,6 @@ export default class Game {
         this.spaceship = null;
         this.canvas = document.getElementById(canvasId);
         this.clock = new THREE.Clock();
-        this.textureLoader = new THREE.TextureLoader();
-        this.spaceshipCurrentPosition = new THREE.Vector3();
-        this.spaceshipTargetPosition = new THREE.Vector3();
 
         //Init game
         this.init();
@@ -108,9 +104,9 @@ export default class Game {
 
     async setupScene() {
         //Create spaceship
-        this.spaceship = new GameModel(this.scene, '/assets/models/spaceship/scene.glb', {
-            scale: new THREE.Vector3(0.01, 0.01, 0.01),
-            rotation: new THREE.Euler(Math.PI / 2, Math.PI, 0)
+        this.spaceship = new Spaceship(this.scene, '/assets/models/spaceship/scene.glb', {
+            rotation: new THREE.Euler(0, Math.PI / 2, 0),
+            scale: new THREE.Vector3(0.5, 0.5, 0.5)
         });
 
         //Add directional scene light
@@ -137,13 +133,12 @@ export default class Game {
 
         //Set position attr
         particlesGeometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-        const particleTexture = this.textureLoader.load('/assets/textures/star.png'); // Add a texture to the particles
 
         //Create star material
         const particlesMaterial = new THREE.PointsMaterial({
-            map: particleTexture,
-            size: 0.2,
-            sizeAttenuation: true,
+            color: 0xffffff,
+            size: 1.5,
+            sizeAttenuation: false,
             transparent: true,
         });
 
@@ -155,7 +150,7 @@ export default class Game {
     }
 
     setupControls() {
-        this.controls = new MovementControls(this.spaceship, this.camera, this.spaceshipTargetPosition, true);
+        this.controls = new SpaceshipControls(this.spaceship, this.camera, true);
     }
 
     setupEventListeners() {
@@ -197,14 +192,10 @@ export default class Game {
         //Rotate stars
         this.stars.rotation.y += -0.0001;
 
-        if(this.spaceship && this.spaceship.model) {
-            //Lerp spaceship position
-            this.spaceshipCurrentPosition.x = lerp(this.spaceshipCurrentPosition.x, this.spaceshipTargetPosition.x, 0.05);
-            this.spaceshipCurrentPosition.y = lerp(this.spaceshipCurrentPosition.y, this.spaceshipTargetPosition.y, 0.05);
-
-            //Apply to spaceship
-            this.spaceship.model.position.copy(this.spaceshipCurrentPosition);
-        }
+       if(this.spaceship && this.spaceship.model) {
+           //Update spaceship
+           this.spaceship.update();
+       }
 
         //Render
         this.renderer.render(this.scene, this.camera);
