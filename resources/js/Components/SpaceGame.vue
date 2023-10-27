@@ -4,6 +4,11 @@ import {Game} from "@/Classes/SpaceGame/Game.js";
 import Modal from "@/Components/Modal.vue";
 import CustomButton from "@/Components/CustomButton.vue";
 
+//Define props
+const props = defineProps({
+    'data': Object,
+});
+
 //Define variables
 let game;
 const isModalOpen = ref(false);
