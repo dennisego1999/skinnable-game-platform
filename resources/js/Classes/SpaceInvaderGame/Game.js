@@ -6,7 +6,8 @@ export class Game extends PixiManager {
         super(canvasId);
 
         this.assets = null;
-        this.bgSprite = null;
+        this.bg = null;
+        this.logo = null;
 
         //Init
         this.init();
@@ -58,6 +59,14 @@ export class Game extends PixiManager {
                             alias: 'floor',
                             src: '/assets/images/space-invader/SpaceInvaders_BackgroundFloor.png',
                         },
+                        {
+                            alias: 'invaders',
+                            src: '/assets/images/space-invader/SpaceInvaders.png',
+                        },
+                        {
+                            alias: 'logo',
+                            src: '/assets/images/space-invader/SpaceInvaders_LogoLarge.png',
+                        },
                     ],
                 },
             ]
@@ -72,23 +81,40 @@ export class Game extends PixiManager {
 
     addAssetsToScene() {
         //Create sprites
-        this.bgSprite = new PIXI.TilingSprite(
+        this.bg = new PIXI.TilingSprite(
             this.assets['background'],
             window.innerWidth,
             window.innerHeight
         );
 
+        //Create sprites
+        this.logo = new PIXI.Sprite(this.assets['logo']);
+
+        //Update assets
+        this.updateAssets();
+
         //Add sprites to scene
-        this.app.stage.addChild(this.bgSprite);
+        this.app.stage.addChild(this.bg, this.logo);
     }
 
+    updateAssets() {
+        //Update logo
+        const logoAspectRatio = 640 / 320;
+        this.logo.width = 400;
+        this.logo.height = this.logo.width / logoAspectRatio;
+        this.logo.position.x = (window.innerWidth - this.logo.width) / 2;
+        this.logo.position.y = (window.innerHeight - this.logo.height) / 2;
+    }
 
     resize() {
         //Resize the app
         this.app.resize();
 
         //Update the sprites
-        this.bgSprite.width = window.innerWidth;
-        this.bgSprite.height = window.innerHeight;
+        this.bg.width = window.innerWidth;
+        this.bg.height = window.innerHeight;
+
+        //Update assets
+        this.updateAssets();
     }
 }

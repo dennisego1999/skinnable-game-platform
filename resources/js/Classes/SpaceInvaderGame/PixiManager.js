@@ -3,7 +3,6 @@ import * as PIXI from 'pixi.js';
 export default class PixiManager {
     constructor(canvasId) {
         this.canvas = document.getElementById(canvasId);
-        this.canvasDimensions = null;
         this.app = null;
         this.fps = 1000 / 60;
         this.then = null;
@@ -15,13 +14,10 @@ export default class PixiManager {
     }
 
     createPixiApp() {
-        //Set canvas dimensions
-        this.canvasDimensions = this.canvas.getBoundingClientRect();
-
         //Create pixi app
         this.app = new PIXI.Application({
-            width: this.canvasDimensions.width,
-            height: this.canvasDimensions.height,
+            width: window.innerWidth,
+            height: window.innerHeight,
             backgroundAlpha: 0,
             antialias: true,
             resolution: window.devicePixelRatio,
@@ -29,7 +25,7 @@ export default class PixiManager {
         });
 
         //Set resizeTo app canvas
-        this.app.resizeTo = this.app.view;
+        this.app.resizeTo = this.canvas;
 
         //Make stage children sortable
         this.app.stage.sortableChildren = true;
