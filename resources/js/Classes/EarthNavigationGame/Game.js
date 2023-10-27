@@ -1,7 +1,7 @@
 import "babylonjs-loaders";
 import * as BABYLON from "babylonjs";
 import {gsap} from "gsap";
-import {Scene} from "@/Classes/SpaceGame/Scene.js";
+import {Scene} from "@/Classes/EarthNavigationGame/Scene.js";
 
 export class Game extends Scene {
     constructor(canvasId) {
@@ -33,7 +33,7 @@ export class Game extends Scene {
         const particleSystem = new BABYLON.ParticleSystem('particles', 10, this.scene);
 
         //Texture of each particle
-        particleSystem.particleTexture = new BABYLON.Texture('/assets/images/flare.png', this.scene);
+        particleSystem.particleTexture = new BABYLON.Texture('/assets/images/flare/flare.png', this.scene);
 
         //Colors of all particles
         particleSystem.color1 = new BABYLON.Color4(0.7, 0.8, 1.0, 1.0);

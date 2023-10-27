@@ -1,7 +1,7 @@
 <script setup>
 import AppLayout from "@/Layouts/AppLayout.vue";
-import TwoDimensionalExperienceGame from "@/Components/TwoDimensionalExperienceGame.vue";
-import SpaceGame from "@/Components/SpaceGame.vue";
+import SpaceInvaderGame from "@/Components/SpaceInvaderGame.vue";
+import EarthNavigationGame from "@/Components/EarthNavigationGame.vue";
 import ArExperienceGame from "@/Components/ArExperienceGame.vue";
 import {useI18n} from "vue-i18n";
 
@@ -17,8 +17,8 @@ const props = defineProps({
 
 //Define variables
 const components = {
-    '2d-experience-game': TwoDimensionalExperienceGame,
-    'space-game': SpaceGame,
+    'space-invader-game': SpaceInvaderGame,
+    'earth-navigation-game': EarthNavigationGame,
     'ar-experience-game': ArExperienceGame,
 };
 

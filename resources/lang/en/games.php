@@ -4,15 +4,15 @@ return [
     'buttons' => [
         'start' => 'Start'
     ],
-    '2d_experience_game' => [
+    'space_invader_game' => [
         'meta' => [
-            'title' => '2D Experience Game',
+            'title' => 'Space Invader Game',
             'description' => 'This is a two dimensional game for you to enjoy.',
         ]
     ],
     'space_game' => [
         'meta' => [
-            'title' => 'Space Game',
+            'title' => 'Earth Navigation Game',
             'description' => 'This is a three dimensional game for you to enjoy.',
         ]
     ],

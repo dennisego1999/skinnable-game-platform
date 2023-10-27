@@ -25,6 +25,7 @@
         "babylonjs": "^6.27.0",
         "babylonjs-loaders": "^6.27.0",
         "gsap": "^3.12.2",
+        "pixi.js": "^7.3.2",
         "vue-i18n": "^9.5.0"
     }
 }

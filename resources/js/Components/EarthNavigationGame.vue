@@ -2,7 +2,7 @@
 import {Head} from "@inertiajs/vue3";
 import {useI18n} from "vue-i18n";
 import {nextTick, onBeforeUnmount, ref} from "vue";
-import {Game} from "@/Classes/SpaceGame/Game.js";
+import {Game} from "@/Classes/EarthNavigationGame/Game.js";
 import Modal from "@/Components/Modal.vue";
 import CustomButton from "@/Components/CustomButton.vue";
 
