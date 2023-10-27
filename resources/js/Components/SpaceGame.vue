@@ -97,7 +97,7 @@ onBeforeUnmount(() => {
         </custom-button>
     </modal>
 
-    <canvas id="game-canvas" class="cursor-grab h-screen w-screen focus-visible:outline-transparent"></canvas>
+    <canvas id="game-canvas" class="cursor-grab h-full w-full focus-visible:outline-transparent"></canvas>
 </template>
 
 <style>

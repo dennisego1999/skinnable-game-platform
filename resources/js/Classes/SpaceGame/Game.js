@@ -1,13 +1,12 @@
 import "babylonjs-loaders";
 import * as BABYLON from "babylonjs";
-import {Scene} from "@/Classes/SpaceGame/Scene.js";
 import {gsap} from "gsap";
+import {Scene} from "@/Classes/SpaceGame/Scene.js";
 
 export class Game extends Scene {
     constructor(canvasId) {
         super(canvasId);
 
-        this.isInteractive = false;
         this.particleSystems = [];
         this.earth = null;
         this.activeMarker = null;
@@ -18,6 +17,9 @@ export class Game extends Scene {
     }
 
     setupGame() {
+        //Disable interaction
+        this.disableInteraction();
+
         //Create a light for the scene
         this.light = new BABYLON.HemisphericLight('light', new BABYLON.Vector3(0, 1, 0), this.scene);
         this.light.intensity = 0.7;
@@ -97,9 +99,9 @@ export class Game extends Scene {
 
                     task.loadedMeshes.forEach(mesh => {
                         //Set scaling of meshes
-                        mesh.scaling.x = 0.0005;
-                        mesh.scaling.y = 0.0005;
-                        mesh.scaling.z = 0.0005;
+                        mesh.scaling.x = 0.0007;
+                        mesh.scaling.y = 0.0007;
+                        mesh.scaling.z = 0.0007;
 
                         //Set the parent on the mesh
                         mesh.parent = this.earth;
@@ -113,8 +115,8 @@ export class Game extends Scene {
                         name: 'marker-1',
                         position: {
                             x: 0,
-                            y: 1.6,
-                            z: -2.1
+                            y: 2.4,
+                            z: -3.2
                         }
                     }];
 
@@ -135,10 +137,6 @@ export class Game extends Scene {
                             duration: 1,
                             ease: 'power2.inOut',
                             onComplete: () => {
-                                //Remove loader from dom
-                                const loader = document.getElementById('loader');
-                                if (loader) loader.remove();
-
                                 //Tween rotation of the mesh
                                 gsap.from(this.earth.rotation, {
                                     x: 0,
@@ -160,7 +158,7 @@ export class Game extends Scene {
                                         this.particleSystems.forEach(item => item.system.start());
 
                                         //Enable interactivity
-                                        this.enableInteractivity();
+                                        this.enableInteraction();
 
                                         //Dispatch event
                                         document.dispatchEvent(new Event('openSpaceModal'));
@@ -173,12 +171,11 @@ export class Game extends Scene {
         };
     }
 
-    createMarker(options) {
+    createMarker(data) {
         //Build mesh
-        const marker = new BABYLON.MeshBuilder.CreateBox(options.name, {
-            width: 0.2,
-            height: 0.2,
-            depth: 0.2,
+        const marker = new BABYLON.MeshBuilder.CreateSphere(data.name, {
+            segments: 64,
+            diameter: 0.5,
         }, this.scene);
 
         //Make marker pickable
@@ -190,7 +187,7 @@ export class Game extends Scene {
 
         //Settings
         marker.parent = this.earth;
-        marker.position = new BABYLON.Vector3(options.position.x, options.position.y, options.position.z);
+        marker.position = new BABYLON.Vector3(data.position.x, data.position.y, data.position.z);
 
         //Set action
         marker.actionManager = this.actionManager;
@@ -204,7 +201,7 @@ export class Game extends Scene {
                     this.activeMarker = marker;
 
                     //Stop particle system
-                    const particleSystemObject = this.particleSystems.find(ps => ps.name === options.name);
+                    const particleSystemObject = this.particleSystems.find(ps => ps.name === data.name);
                     particleSystemObject.system.stop();
 
                     //Animate camera view to marker
@@ -226,7 +223,7 @@ export class Game extends Scene {
 
         //Add to particle systems list
         this.particleSystems.push({
-            name: options.name,
+            name: data.name,
             system: particleSystem,
         });
     }
@@ -236,8 +233,8 @@ export class Game extends Scene {
         const ease = new BABYLON.CubicEase();
         ease.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEINOUT);
 
-        //Disable camera control during the zoom
-        this.camera.detachControl(this.canvas);
+        //Disable interaction
+        this.disableInteraction();
 
         //Start animation
         const zoomAnimation = BABYLON.Animation.CreateAndStartAnimation(
@@ -255,8 +252,8 @@ export class Game extends Scene {
                     return;
                 }
 
-                //Enable camera control
-                this.camera.attachControl(this.canvas);
+                //Enable interaction
+                this.enableInteraction();
             }
         );
         zoomAnimation.disposeOnEnd = true;
@@ -275,19 +272,11 @@ export class Game extends Scene {
     }
 
     onPointerDown() {
-        if (!this.isInteractive) {
-            return;
-        }
-
         //Update the cursor
         this.updateCursor();
     }
 
     onPointerUp() {
-        if (!this.isInteractive) {
-            return;
-        }
-
         //Update the cursor
         this.updateCursor();
     }
@@ -304,12 +293,16 @@ export class Game extends Scene {
         this.canvas.classList.add('cursor-grab');
     }
 
-    enableInteractivity() {
-        this.isInteractive = true;
+    enableInteraction() {
+        if(this.canvas.classList.contains('pointer-events-none')) {
+            this.canvas.classList.remove('pointer-events-none')
+        }
     }
 
-    disableInteractivity() {
-        this.isInteractive = true;
+    disableInteraction() {
+        if(!this.canvas.classList.contains('pointer-events-none')) {
+            this.canvas.classList.add('pointer-events-none')
+        }
     }
 
     addEventListeners() {
