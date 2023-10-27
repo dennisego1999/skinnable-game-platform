@@ -1,4 +1,6 @@
 <script setup>
+import {Head} from "@inertiajs/vue3";
+import {useI18n} from "vue-i18n";
 import {nextTick, onBeforeUnmount, ref} from "vue";
 import {Game} from "@/Classes/SpaceGame/Game.js";
 import Modal from "@/Components/Modal.vue";
@@ -13,6 +15,9 @@ const props = defineProps({
 let game;
 const isModalOpen = ref(false);
 const isMarkerOpen = ref(false);
+
+//Set translations variable
+const {t} = useI18n({});
 
 //Define functions
 function openModal() {
@@ -56,6 +61,11 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
+    <Head
+        :title="t('games.space_game.meta.title')"
+        :description="t('games.space_game.meta.description')"
+    />
+
     <div id="loader" class="fixed h-screen w-screen bg-white flex justify-center items-center">
         <div class="relative flex justify-center items-center gap-2 w-fit h-fit">
             <div class="w-4 h-20 m-auto rounded bg-global-blue-100 animate-loader-bar-1"></div>
